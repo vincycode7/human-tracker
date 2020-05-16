@@ -95,8 +95,23 @@ Note that you may need to do additional processing of the output to handle incor
 
 From the main directory:
 
-### Step 1 - Start the Mosca server
+### link to original pytorch model (https://modelzoo.co/model/pytorch-yolov3-pytorch)
 
+### Step 1a - Download the weight from drive
+
+```
+cd ./model
+```
+
+*https://drive.google.com/open?id=164aCzkNrhvndhAJaMrUbjnTB4PXLQlac*
+the above link is a folder on drive where the .bin weight is saved.
+download the weight into the ./model folder
+
+```
+cd ../
+```
+
+### Step 1b - Start the Mosca server
 ```
 cd webservice/server/node-server
 node ./server.js
