@@ -4,6 +4,30 @@ You can use this document as a template for providing your project write-up. How
 have a different format you prefer, feel free to use it as long as you answer all required
 questions.
 
+## About Model 
+The model that was converted for the project is the pytorch's yolov3, It was a hard process but worked out thanks to openvino's team for having enough Supported layers that happened to be in the Yolov3. In the process of converting, Some major Difficulties were encounted, Because the Model had to be converted to Onnx First, There Were some Mis-handling of Some Operators by Onnx as some Operators in the model were treated as though the output of such operators were Constant. After this was discovered, the way i was able to solve that was to use the *.data* on tensors that had to go through Such Operators. I don't know why this solved the error but it did.
+In Addition, Since Output Of models were expected to be of fixed size, operations like Non-maximum supression were left for later. The new output of the converted yolov3 is now a list containing 3 elements of shapes [n*13*13*255, n*26*26*255, n*52*52*255], where n is batch size. this output allows the model to be correctly converted to onnx and then to IR representation. SO During Inference, The output of the IR model will be processed by Perform NMS on the output to get correct predictions.
+
+## Link To the Pytorch model
+https://modelzoo.co/model/pytorch-yolov3-pytorch
+
+## Link to .bin file for IR model
+Since I can push large files to Github, the weight(.bin) of the IR model is saved in drive and can be downloaded into the model folder.
+
+[To Download weight]
+'''
+cd model
+'''
+Goto https://drive.google.com/drive/folders/164aCzkNrhvndhAJaMrUbjnTB4PXLQlac
+download the weight and move it to the model folder
+
+
+## To Run Inference on the model
+reset && python3 main.py -d CPU -i resources/Pedestrian_Detect_2_1_1.mp4 -l "/opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so" -m models/project7.xml -pt 0.5 -iou 0.2 -md 1 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
+
+##[Note] :- Any other model can't be used to test this software as input to this model is expected to be 1*416*416, code to take care of this is in the software though.
+So to successfully run this model the weight has to be downloaded.
+
 ## Explaining Custom Layers
 
 [Answer]

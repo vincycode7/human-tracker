@@ -92,7 +92,7 @@ class human_tracker(object):
         if not input_:
             raise ValueError('Input Required')
         print('e dey work so?  ', input_)
-        if self.out_name:
+        if self.out_name and len(input_.split('.')) > 1 and len(self.out_name.split('.')) > 1:
             if input_.split('.')[1] != self.out_name.split('.')[1]:
                 import warnings
                 out_name = self.out_name.split('.')[0]+ '.'+input_.split('.')[1]
@@ -292,7 +292,10 @@ class human_tracker(object):
         ### TODO: Handle the input stream ###
         print('in cam')
         input_shape = self.infer_network.get_input_shape() 
-        cap = cv2.VideoCapture(self.input_)
+        cap = cv2.VideoCapture(0)
+        cap.open(0)
+        width = int(cap.get(3))
+        height = int(cap.get(4))
         
         # Create a video writer for the output video
         # The second argument should be `cv2.VideoWriter_fourcc('M','J','P','G')`
@@ -312,8 +315,6 @@ class human_tracker(object):
                 
             # Read the next frame
             flag, frame = cap.read()
-            width = int(cap.get(3))
-            height = int(cap.get(4))
             print('curr input',current_inputid)
             print('current need', curr_needid)
             if flag:
@@ -698,8 +699,8 @@ class human_tracker(object):
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
         
         ### TODO: Send frame to the ffmpeg server
-        sys.stdout.buffer.write(self.plotted_frame)
-        sys.stdout.flush()        
+#         sys.stdout.buffer.write(self.plotted_frame)
+#         sys.stdout.flush()        
     def publish_result(self):
         #     ### TODO: Calculate and send relevant information on ###
         #     ### current_count, total_count and duration to the MQTT server ###
