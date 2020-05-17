@@ -64,6 +64,7 @@ class Network:
         
         ### TODO: Add any necessary extensions ###
         if len(unsupported_layers) > 0 and cpu_ext and "CPU" in device:
+            print('{} Unsupported layers Found. Checking if there are in CPU ext....'.format(len(unsupported_layers)))
             self.plugin.add_extension(cpu_ext,device)
         else:
             raise FileNotFoundError("either CPU extention wasn't specified and unsupported layers are present or you did't specify device to be cpu")

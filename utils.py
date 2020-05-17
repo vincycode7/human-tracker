@@ -365,6 +365,11 @@ class human_tracker(object):
         return
     
     def get_real_box(self,out,conf_thresh=0.6,batch=1,h=None,w=None,num_anchors=None,only_objectness=1,validation=False,num_classes=80):
+        """
+        Since Yolo provides 3 different list of output for an image this function helps to remove output that 
+        Has it's objectness less than some threshold, also this function help to pick only prediction that has 
+        human in it. 
+        """
         xs,ys,ws,hs, det_confs,cls_confs = out[0],out[1],out[2],out[3], out[4], out[5:5+num_classes]
         cls_max_confs, cls_max_ids = np.max(cls_confs,axis=0), np.argmax(cls_confs,axis=0)
         cls_confs = cls_confs.transpose(0,1)  
@@ -408,7 +413,9 @@ class human_tracker(object):
 
 
     def plot_boxes(self,img, boxes, class_names, plot_labels, color = None):
-
+        """
+        Function to plot boxes on images.
+        """
         # Define a tensor used to set the colors of the bounding boxes
         colors = np.array([[255,0,255],[255,0,255],[0,255,255],[0,255,0],[255,255,0],[255,0,0]])
 
@@ -469,7 +476,7 @@ class human_tracker(object):
         return img
 
     def boxes_iou(self,box1, box2):
-
+        """ Function to calculate how similar two boxes are """
         # Get the Width and Height of each bounding box
         width_box1 = box1[2]
         height_box1 = box1[3]
@@ -564,6 +571,12 @@ class human_tracker(object):
         return best_boxes
 
     def detect_objects(self,out=None,iou_thresh=0.3, nms_thresh=0.5):
+        """ This Function takes the output of the prediction from the 
+            network and sends those output to the get_real_box function
+            with the appropraite parameters. The results of the Three 
+            outputs are merged into on list and Non-Maximum Suppression
+            is performed on them.
+        """
         # Start the time. This is done to calculate how long the detection takes.
         def get_pred(out=None,conf_thresh=0.5):
             boxes = list()
@@ -615,15 +628,18 @@ class human_tracker(object):
         return 1
     
     def track_boxes(self,id_,result):
+        """ This is the human-tracker function, According to my estimation, there are 30 frames in 0.01sec of a video, Given 
+            this, each frame was calculated to take 0.00033333333sec to move from one frame to another. Given this, For Each
+            Object Detected, We add This constant Value to the total time per frame. The average of the total time for all
+            the object detected is what gave the average.
+        """
         secs_per_frame = 0.00033333333
         if self.curr_boxes == {} and self.tolerate == {}:
-            print('we here now1')
 #             self.curr_boxes.update({idx:box for idx,box in zip(range(self.total_detect,self.total_detect+len(result)),result)})
             self.curr_boxes.update({idx:{'box':box, 'time':secs_per_frame} for idx,box in zip(range(self.total_detect,self.total_detect+len(result)),result)})
             self.total_detect += len(self.curr_boxes)
             result.clear()
         else:
-            print('we here now2')
             keep = {}          
             # check if current boxes in tolerate
             idx3 = list(self.tolerate.keys())
@@ -703,8 +719,8 @@ class human_tracker(object):
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
         
         ### TODO: Send frame to the ffmpeg server
-#         sys.stdout.buffer.write(self.plotted_frame)
-#         sys.stdout.flush()        
+        sys.stdout.buffer.write(self.plotted_frame)
+        sys.stdout.flush()        
     def publish_result(self):
         #     ### TODO: Calculate and send relevant information on ###
         #     ### current_count, total_count and duration to the MQTT server ###
