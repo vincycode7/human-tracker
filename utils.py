@@ -1,4 +1,4 @@
-import time,cv2,json,sys
+import time,cv2,json,sys,warnings
 import numpy as np
 from inference import Network
 
@@ -94,7 +94,6 @@ class human_tracker(object):
         print('e dey work so?  ', input_)
         if self.out_name and len(input_.split('.')) > 1 and len(self.out_name.split('.')) > 1:
             if input_.split('.')[1] != self.out_name.split('.')[1]:
-                import warnings
                 out_name = self.out_name.split('.')[0]+ '.'+input_.split('.')[1]
                 msg = "Output have different extensions out with {} and input with {} new output is {}".format(self.out_name.split('.')[1],input_.split('.')[1],out_name)
                 warnings.warn(msg, UserWarning)
