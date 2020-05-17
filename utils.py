@@ -87,11 +87,12 @@ class human_tracker(object):
     def run(self, input_,async_=True):
         self.async_ = async_
         if self.async_==None:
-            raise ValueError('Run mode required (True for async, False for Sync)')
+            self.async_ = True
+            msg = "Run mode is None changed to async"
+            warnings.warn(msg, UserWarning)
         print('mode is {}'.format(self.async_))
         if not input_:
             raise ValueError('Input Required')
-        print('e dey work so?  ', input_)
         if self.out_name and len(input_.split('.')) > 1 and len(self.out_name.split('.')) > 1:
             if input_.split('.')[1] != self.out_name.split('.')[1]:
                 out_name = self.out_name.split('.')[0]+ '.'+input_.split('.')[1]
