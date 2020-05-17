@@ -121,7 +121,11 @@ class human_tracker(object):
     
     def runner(self, input_):
         """This Function Helps Check if Input is a 
-           valid one
+           valid one.
+           Reason for this is because, there might be some
+           functionalities that are specified to just one 
+           image or a video or webcam, this allows to
+           efficiently handle that.
            
            @param:
            arg1(input_): the input format to check
