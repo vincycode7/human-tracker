@@ -234,6 +234,7 @@ class human_tracker(object):
         return
 
     def infer_vid(self,vid_ref=None,out_serveronly=True,out_name=None):
+        """ INferenc on videos """
         ### TODO: Handle the input stream ###
         print('in vid')
         input_shape = self.infer_network.get_input_shape() 
@@ -293,6 +294,7 @@ class human_tracker(object):
         cv2.destroyAllWindows() 
 
     def infer_webcam(self,out_serveronly=False,out_name=None):
+        """ Used to perform Reference on a webcam Image """
         ### TODO: Handle the input stream ###
         print('in cam')
         input_shape = self.infer_network.get_input_shape() 
@@ -352,6 +354,9 @@ class human_tracker(object):
         cv2.destroyAllWindows() 
     
     def infer_single_frame(self,processed_frame=None,id_=None):
+        """ Performs inference on a single frame The 3 runners utilize this 
+            to run
+        """
         if not isinstance(processed_frame,np.ndarray):
             raise ValueError("You don't have an active frame. type ",type(processed_frame)," not a ",np.ndarray," input")
 
@@ -522,7 +527,10 @@ class human_tracker(object):
 
 
     def nms(self,boxes, iou_thresh):
-
+        """ This Function takes the output of yolov3 and loops though all
+            to know which ones are similar, This function keeps the best 
+            prediction for an object
+        """
         # If there are no bounding boxes do nothing
         if len(boxes) == 0:
             return boxes
@@ -607,6 +615,7 @@ class human_tracker(object):
         return boxes
 
     def check_output_ready(self,id_=None):
+        """ Check if the output is ready to be used, returns 1 if it is, returns 0 if it is not """
         if self.async_:
             "Means it is an async program"
             if self.infer_network.wait(0) == 0:
@@ -717,12 +726,14 @@ class human_tracker(object):
         
         cv2.putText(self.plotted_frame, out_msg, (15, 15),
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
-        
-        ### TODO: Send frame to the ffmpeg server
-        sys.stdout.buffer.write(self.plotted_frame)
-        sys.stdout.flush()        
+             
     def publish_result(self):
-        #     ### TODO: Calculate and send relevant information on ###
+        """ This function is called when outputs are to be published """
+        ### Send frame to the ffmpeg server
+        sys.stdout.buffer.write(self.plotted_frame)
+        sys.stdout.flush()   
+
+        #     ### Calculate and send relevant information on ###
         #     ### current_count, total_count and duration to the MQTT server ###
         #     ### Topic "person": keys of "count" and "total" ###
         #     ### Topic "person/duration": key of "duration" ###
