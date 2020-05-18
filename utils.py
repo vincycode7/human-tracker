@@ -637,15 +637,15 @@ class human_tracker(object):
         return 1
     
     def track_boxes(self,id_,result):
-        """ This is the human-tracker function, According to my estimation, there are 30 frames in 0.01sec of a video, Given 
-            this, each frame was calculated to take 0.00033333333sec to move from one frame to another. Given this, For Each
+        """ This is the human-tracker function, According to my estimation, there are 30 frames  0.01min of a video, Given 
+            this, each frame was calculated to take 0.00033333333min to move from one frame to another. Given this, For Each
             Object Detected, We add This constant Value to the total time per frame. The average of the total time for all
             the object detected is what gave the average.
         """
-        secs_per_frame = 0.00033333333
+        mins_per_frame = 0.00033333333
         if self.curr_boxes == {} and self.tolerate == {}:
 #             self.curr_boxes.update({idx:box for idx,box in zip(range(self.total_detect,self.total_detect+len(result)),result)})
-            self.curr_boxes.update({idx:{'box':box, 'time':secs_per_frame} for idx,box in zip(range(self.total_detect,self.total_detect+len(result)),result)})
+            self.curr_boxes.update({idx:{'box':box, 'time':mins_per_frame} for idx,box in zip(range(self.total_detect,self.total_detect+len(result)),result)})
             self.total_detect += len(self.curr_boxes)
             result.clear()
         else:
@@ -660,7 +660,7 @@ class human_tracker(object):
                     iou_curr = self.boxes_iou(each_new,self.tolerate[each_tol_idx]['box'])
                     print('iou res in tolerate boxes  {}'.format(iou_curr))
                     if iou_curr > 0.2:
-                        keep.update({each_tol_idx:{'box' : each_new, 'time':secs_per_frame+_copy_tol[each_tol_idx]['time']}})
+                        keep.update({each_tol_idx:{'box' : each_new, 'time':mins_per_frame+_copy_tol[each_tol_idx]['time']}})
                         _copy_res.pop(_copy_res.index(each_new))
                         _copy_tol.pop(each_tol_idx)
                         break
@@ -675,7 +675,7 @@ class human_tracker(object):
             #increase the chances of boxes in tolorate of not been considered again
             for each_tol_idx in idx3:
                 self.tolerate[each_tol_idx]['count'] += 1
-                self.tolerate[each_tol_idx]['time'] += secs_per_frame   
+                self.tolerate[each_tol_idx]['time'] += mins_per_frame   
                 
             # check if current boxes in new boxes else put in tolorate for 30frames before remove   
             idx2 = list(self.curr_boxes.keys())
@@ -687,7 +687,7 @@ class human_tracker(object):
                     iou_curr = self.boxes_iou(each_new,self.curr_boxes[each_old_idx]['box'])
                     print('iou res {}, boxes {}, {}'.format(iou_curr, each_new, len(self.curr_boxes[each_old_idx])))
                     if iou_curr > 0.2:
-                        keep.update({each_old_idx:{'box' : each_new, 'time':secs_per_frame+_copy_curr[each_old_idx]['time']}})
+                        keep.update({each_old_idx:{'box' : each_new, 'time':mins_per_frame+_copy_curr[each_old_idx]['time']}})
                         _copy_res.pop(_copy_res.index(each_new))
                         _copy_curr.pop(each_old_idx)
                         break
@@ -698,10 +698,10 @@ class human_tracker(object):
             idx2.sort()
             
             for each_old_idx in idx2:
-                self.tolerate.update({each_old_idx:{'box': self.curr_boxes[each_old_idx]['box'], 'time' : secs_per_frame+self.curr_boxes[each_old_idx]['time'], 'count':0}})
+                self.tolerate.update({each_old_idx:{'box': self.curr_boxes[each_old_idx]['box'], 'time' : mins_per_frame+self.curr_boxes[each_old_idx]['time'], 'count':0}})
             _copy_res = result.copy()
             for each_ in _copy_res:
-                keep.update({self.total_detect:{'box':each_, 'time' : secs_per_frame}})
+                keep.update({self.total_detect:{'box':each_, 'time' : mins_per_frame}})
                 _copy_res.pop(_copy_res.index(each_))
                 self.total_detect += 1
             result = _copy_res.copy()
